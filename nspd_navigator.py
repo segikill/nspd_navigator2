@@ -3,9 +3,9 @@
 description: Инструмент для добавления подложек <a href="https://nspd.gov.ru/map">карты НСПД</a>
 version: 1.3.1-v19.11-ortho-first
 reference: 
-author: Pavel Pereverzev
-author_mail: telegram: @PavelPereverzev
-original_url: https://gisworks.ru/qgis_tools/nspd_navigator.py
+author: 
+author_mail: 
+original_url: https://raw.githubusercontent.com/segikill/nspd_navigator2/refs/heads/main/nspd_navigator.py
 """
 
 from qgis.utils import iface
