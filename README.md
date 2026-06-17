@@ -7,7 +7,7 @@
 После загрузки основного скрипта raw-ссылка для установки и обновления будет:
 
 ```text
-https://raw.githubusercontent.com/segikill/nspd_navigator2/refs/heads/main/nspd_navigator.py
+https://raw.githubusercontent.com/segikill/nspd_navigator2/main/nspd_navigator.py
 ```
 
 В шапке `nspd_navigator.py` поле `original_url` должно указывать на эту ссылку, чтобы Kolba могла проверять обновления.
