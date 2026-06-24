@@ -1,6 +1,6 @@
 # NSPD Navigator
 
-Модуль для работы с подложками и слоями НСПД в QGIS через Kolba.
+Модуль для работы с подложками и слоями НСПД в QGIS через модуль Kolba (https://plugins.qgis.org/plugins/kolba/).
 
 ## Установка
 
