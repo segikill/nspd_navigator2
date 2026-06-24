@@ -1,6 +1,14 @@
 # NSPD Navigator
 
-Модуль для работы со слоями НСПД в QGIS через Kolba.
+Модуль для работы с подложками и слоями НСПД в QGIS через Kolba.
+
+## Установка
+
+В Kolba откройте получение Web Script и укажите ссылку:
+
+```text
+https://raw.githubusercontent.com/segikill/nspd_navigator2/main/nspd_navigator.py
+```
 
 ## Базовые карты и подложки
 
