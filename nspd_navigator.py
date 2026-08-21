@@ -129,7 +129,7 @@ WEB_MERCATOR_HALF_WORLD = 20037508.342789244
 # Защита от случайного рендера НСПД на масштабе страны/мира.
 # Слой будет видим только на 1:250 000 и ближе. Это ставится до addMapLayer,
 # чтобы QGIS не начал массово запрашивать тайлы/картинки сразу после добавления.
-NSPD_RASTER_MIN_VISIBLE_SCALE = 250000
+NSPD_RASTER_MIN_VISIBLE_SCALE = 20000000
 NSPD_ORTHO_MIN_VISIBLE_SCALE = 180000
 NSPD_RASTER_WARN_SCALE = 500000
 NSPD_XYZ_TILE_SIZE_PX = 256
