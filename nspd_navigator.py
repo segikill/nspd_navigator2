@@ -514,7 +514,6 @@ nspd_headers = {
     "connection":"keep-alive",
     "content-length":"410",
     "content-type":"application/json",
-    "cookie":"_ym_uid=1731913107516103711; _ym_d=1731913107; webchat-webchat_nspd_noauth-uuid=ef6f562f-7c4d-4d85-a6c4-b5c3b0107e0d; JSESSIONID=da323884-0e90-4365-9e1d-70c4885a0fec; _ym_isad=1; _ym_visorc=b",
     "host":"nspd.gov.ru",
     "origin":"https://nspd.gov.ru",
     "pragma":"no-cache",
@@ -534,7 +533,6 @@ nspd_headers_search = {
     "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7,uk;q=0.6",
     "Cache-Control": "no-cache",
     "Connection": "keep-alive",
-    "Cookie": "_ym_uid=1731913107516103711; _ym_d=1731913107; _ym_isad=1; _ym_visorc=b",
     "Host": "nspd.gov.ru",
     "Pragma": "no-cache",
     "Referer": "https://nspd.gov.ru/map?zoom=10.652339771207421&coordinate_x=4190415.174867105&coordinate_y=7500396.669767046&theme_id=1&is_copy_url=true",
@@ -673,6 +671,9 @@ def fetch_nspd_base_layers(session=None):
     return result
 
 
+NSPD_CATALOG_ERROR = ''
+
+
 def get_tms_list():
     """
     Загружает дерево слоёв НСПД (themeId=1) и дополняет его базовыми картами (WMTS/XYZ),
@@ -681,14 +682,32 @@ def get_tms_list():
       - data: исходное дерево + добавленные базовые карты
       - layers_meta: dict[layerId] -> {title, categoryId, layerType}
     """
+    global NSPD_CATALOG_ERROR
+    NSPD_CATALOG_ERROR = ''
+    headers_light = {
+        "accept": "application/json, text/plain, */*",
+        "accept-encoding": "gzip, deflate",
+        "accept-language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+        "cache-control": "no-cache",
+        "connection": "keep-alive",
+        "host": "nspd.gov.ru",
+        "pragma": "no-cache",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36"
+    }
     try:
         s = requests.Session()
         u = s.get(
             'https://nspd.gov.ru/api/geoportal/v1/layers-theme-tree?themeId=1',
             verify=False,
+            headers=headers_light,
             timeout=10
         )
+        u.raise_for_status()
         data = u.json()
+        if not isinstance(data, dict) or not isinstance(data.get('layers'), list):
+            raise ValueError('Ответ НСПД не содержит список слоёв')
+        if not isinstance(data.get('tree'), dict) or not isinstance(data['tree'].get('folders'), list):
+            raise ValueError('Ответ НСПД не содержит дерево слоёв')
 
         layers = list(data.get('layers', []))
         layers_meta = {
@@ -761,7 +780,8 @@ def get_tms_list():
 
         data['layers'] = layers
         return data, layers_meta
-    except Exception:
+    except Exception as exc:
+        NSPD_CATALOG_ERROR = '{}: {}'.format(type(exc).__name__, exc)
         return {}, {}
 
 
@@ -3559,6 +3579,8 @@ if not data.get('tree', {}).get('folders', {}):
     msg.setWindowTitle("Уведомление")
     msg.setStandardButtons(QMessageBox.StandardButton.Ok)
     msg.setText('Сервис НСПД временно недоступен.<br>Рекомендуется отслеживать доступность НСПД на <a href="https://nspd.gov.ru/map">сайте</a>')
+    if NSPD_CATALOG_ERROR:
+        msg.setDetailedText(NSPD_CATALOG_ERROR)
     msg.exec()
 else:
     dockwidget = NSPD_DockWidget(None, data, layers_meta)
